@@ -1,0 +1,28 @@
+# Claude Instructions — ScopeKit
+
+This project uses **ScopeKit** with an MCP server to enforce module-scoped context.
+
+## Before editing any file
+
+1. **Call `scopekit_resolve_module`** with the file path to find its owning module.
+2. **Call `scopekit_get_context`** with that module ID to load the scoped context — the module brief plus all its dependency briefs.
+3. Read the context carefully. It tells you exactly which files you may edit and what constraints apply.
+
+## When you receive a `MOD-XXX: <task>` prompt
+
+Call `scopekit_get_context` with `module_id: "MOD-XXX"` immediately, before doing anything else.
+
+## Rules
+
+- Only edit files listed under the **Scope** section of the module you loaded.
+- For cross-module work, call `scopekit_get_context` for each additional module involved — do not guess at constraints from another module.
+- New shared types or contracts belong in the shared contracts file listed in `INDEX.md`, not inline.
+- If you are unsure which module owns something, call `scopekit_list_modules` to browse the registry.
+
+## MCP tools available
+
+| Tool | When to use |
+|------|-------------|
+| `scopekit_list_modules` | Discover all module IDs and their primary directories |
+| `scopekit_get_context` | Load the full scoped context for a module (pass `module_id` or `file_path`) |
+| `scopekit_resolve_module` | Find which module owns a specific file path |
