@@ -1,28 +1,32 @@
 # Claude Instructions — ScopeKit
 
-This project uses **ScopeKit** with an MCP server to enforce module-scoped context.
+This project uses **ScopeKit**. Module ownership, dependencies, and constraints are
+defined in `AGENTS/scopekit.json` and the `AGENTS/MOD-XXX.md` briefs.
 
 ## Before editing any file
 
-1. **Call `scopekit_resolve_module`** with the file path to find its owning module.
-2. **Call `scopekit_get_context`** with that module ID to load the scoped context — the module brief plus all its dependency briefs.
-3. Read the context carefully. It tells you exactly which files you may edit and what constraints apply.
+Call `scopekit_get_context` with the file path (or its module ID) and read the brief.
+It tells you which files you may edit and which invariants you must respect.
 
-## When you receive a `MOD-XXX: <task>` prompt
-
-Call `scopekit_get_context` with `module_id: "MOD-XXX"` immediately, before doing anything else.
+A **PreToolUse hook** enforces this: the first time you edit a file in a module, the
+edit is blocked once and the module's scoped context is injected. Read it, then re-issue
+the edit. You will not be interrupted again for that module this session.
 
 ## Rules
 
-- Only edit files listed under the **Scope** section of the module you loaded.
-- For cross-module work, call `scopekit_get_context` for each additional module involved — do not guess at constraints from another module.
-- New shared types or contracts belong in the shared contracts file listed in `INDEX.md`, not inline.
-- If you are unsure which module owns something, call `scopekit_list_modules` to browse the registry.
+- Edit only files listed under the **Files in scope** of the module you loaded.
+- A dependency's **Contract** and **Invariants** are read-only context — do not edit
+  files in dependency modules; call `scopekit_get_context` for that module if you must.
+- Module dependencies are derived from real imports — if you add a cross-module import,
+  the graph updates itself.
+- After changing code that a brief describes, update the brief and run `scopekit verify`.
 
-## MCP tools available
+## Tools
 
-| Tool | When to use |
-|------|-------------|
-| `scopekit_list_modules` | Discover all module IDs and their primary directories |
-| `scopekit_get_context` | Load the full scoped context for a module (pass `module_id` or `file_path`) |
-| `scopekit_resolve_module` | Find which module owns a specific file path |
+| Tool | When |
+|------|------|
+| `scopekit_get_context` | Before editing — load a module's scope + dependency contracts |
+| `scopekit_resolve_module` | Find which module owns a file |
+| `scopekit_list_modules` | Browse the registry |
+| `scopekit_verify` | Confirm briefs still match the code (anchors, globs, deps) |
+| `scopekit_scaffold` | First-time setup: propose modules from the import graph |

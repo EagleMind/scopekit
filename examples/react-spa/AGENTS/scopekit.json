@@ -1,0 +1,12 @@
+{
+  "project": "React SPA",
+  "srcRoots": ["src"],
+  "modules": [
+    { "id": "MOD-001", "name": "API Layer",       "globs": ["src/services/**", "src/utils/http.ts", "src/types/**"] },
+    { "id": "MOD-002", "name": "State Management", "globs": ["src/store/**"] },
+    { "id": "MOD-003", "name": "UI Components",    "globs": ["src/components/**"] },
+    { "id": "MOD-004", "name": "Auth",             "globs": ["src/auth/**"] },
+    { "id": "MOD-005", "name": "UI Primitives",    "globs": ["src/components/ui/**"] }
+  ],
+  "sharedContracts": ["src/types/api.ts", "src/utils/http.ts", "src/index.css"]
+}

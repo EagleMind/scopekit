@@ -1,0 +1,10 @@
+{
+  "project": "Fixture SPA",
+  "srcRoots": ["src"],
+  "modules": [
+    { "id": "MOD-001", "name": "API Layer", "globs": ["src/services/**", "src/utils/**", "src/types/**"] },
+    { "id": "MOD-002", "name": "Store", "globs": ["src/store/**"] },
+    { "id": "MOD-003", "name": "UI", "globs": ["src/components/**"] }
+  ],
+  "sharedContracts": ["src/types/api.ts"]
+}

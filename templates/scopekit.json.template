@@ -1,0 +1,12 @@
+{
+  "project": "{{PROJECT_NAME}}",
+  "srcRoots": ["src"],
+  "modules": [
+    {
+      "id": "MOD-001",
+      "name": "Module One",
+      "globs": ["src/example/**"]
+    }
+  ],
+  "sharedContracts": ["src/types.ts"]
+}

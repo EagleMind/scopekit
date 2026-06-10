@@ -1,64 +1,32 @@
 ---
 id: {{MODULE_ID}}
 name: {{MODULE_NAME}}
-agent: {{AGENT_NUMBER}}
-deps: {{DEPENDENCIES}}
 ---
 
-# {{MODULE_ID}} — {{MODULE_NAME}}
-
-## Scope (files this agent owns)
-
-```
-{{SCOPED_FILES}}
-```
-
 <!--
-  If this module has integration points in files owned by other modules,
-  list them below so the agent knows what to check (but not freely edit):
+  Write JUDGMENT ONLY — things the code cannot tell the reader.
+  Do NOT list files here (globs in scopekit.json derive them) and do NOT explain
+  how the code works (the reader can read it). Keep the whole brief tight.
+
+  Anchor every claim to a real symbol or file with `@anchor`:
+    @anchor src/utils/http.ts            (file must exist)
+    @anchor src/types/api.ts::ApiError   (symbol must exist in that file)
+  `scopekit verify` fails if an anchor goes stale — that is how briefs stay honest.
+
+  Sections:
+    Contract   — public surface other modules rely on; contributed to dependents.
+    Invariants — caller-facing rules that silently break if ignored; contributed to dependents.
+    Internal   — notes that only matter when editing THIS module; never contributed.
 -->
 
-Cross-cutting integration points (coordinate with owning module before editing):
-```
-{{CROSS_CUTTING_FILES}}
-```
+## Contract
 
-## What This Module Does
+- {{EXPORTED_THING}} — {{WHAT_CALLERS_RELY_ON}}. @anchor {{FILE_OR_SYMBOL}}
 
-{{ONE_PARAGRAPH_SUMMARY}}
+## Invariants
 
-## Key Files — What to Know Before Editing
+- {{RULE_THAT_BREAKS_THINGS_IF_IGNORED}}. @anchor {{FILE_OR_SYMBOL}}
 
-### `{{FILE_1}}`
+## Internal
 
-- {{KEY_FACT_1}}
-- {{KEY_FACT_2}}
-- {{CRITICAL_CONSTRAINT_1}}
-
-### `{{FILE_2}}`
-
-- {{ARCHITECTURE_NOTE}}
-- {{GOTCHA_OR_INVARIANT}}
-
-## Public API (what other modules call)
-
-```
-{{API_EXAMPLES}}
-```
-
-## Tauri Commands / API Routes / Exports Owned
-
-| Name | Purpose |
-|------|---------|
-| `{{EXPORT_1}}` | {{DESCRIPTION_1}} |
-| `{{EXPORT_2}}` | {{DESCRIPTION_2}} |
-
-## Critical Constraints
-
-- {{CONSTRAINT_1}}
-- {{CONSTRAINT_2}}
-- {{CONSTRAINT_3}}
-
-## Related Modules
-
-- **{{RELATED_MOD_ID}}**: {{WHY_RELATED}}
+- {{NON_OBVIOUS_GOTCHA_FOR_EDITORS_OF_THIS_MODULE}}. @anchor {{FILE_OR_SYMBOL}}
