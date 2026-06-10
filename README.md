@@ -34,40 +34,42 @@ git clone https://github.com/EagleMind/scopekit.git
 cd scopekit/mcp-server && npm install && npm run build
 ```
 
-### 2. Map your modules
-
-Before running any script, look at your codebase and decide your module boundaries. Aim for 5–10 — each one a logical area an AI could work in independently. The count you land on is what you pass to the setup script.
-
-> **If your codebase isn't modular yet** — files mixed across concerns, no clear ownership boundaries, logic scattered across layers — ScopeKit's briefs will be inaccurate from day one. A brief that claims to scope `src/utils/` but half the business logic lives there too will mislead the AI just as badly as no brief at all. In that case, do a rough structural refactor first (or at minimum decide where the boundaries *should* be), then scaffold. ScopeKit describes reality; it doesn't fix a codebase that doesn't have shape yet.
-
-### 3. Scaffold your project
+### 2. Scaffold your project
 
 **macOS / Linux:**
 ```bash
-bash /path/to/scopekit/scripts/setup.sh "My Project" <num_modules>
+bash /path/to/scopekit/scripts/setup.sh "My Project"
 ```
 
 **Windows (PowerShell):**
 ```powershell
-& "C:\path\to\scopekit\scripts\setup.ps1" -ProjectName "My Project" -NumModules <num_modules>
+& "C:\path\to\scopekit\scripts\setup.ps1" -ProjectName "My Project"
 ```
 
-This creates `AGENTS/` with a blank `INDEX.md`, one stub `MOD-XXX.md` per module, and a quality checklist.
+This creates `AGENTS/` with a blank `INDEX.md` and a quality checklist. No module files yet — those come in the next step.
 
-### 4. Fill in `AGENTS/INDEX.md`
+### 3. Let the MCP server analyze your codebase
 
-Name your modules, draw the dependency graph, list shared contracts, write your project-specific agent rules.
+Once the MCP server is connected (step 5), tell Claude:
 
-### 5. Fill in each `AGENTS/MOD-XXX.md`
+```
+Run scopekit_scaffold to analyze this project and create the module files.
+```
 
-For each module, define:
-- **Scope** — exact file paths this module owns
-- **What It Does** — one paragraph
-- **Key Files** — constraints and gotchas, not a tutorial
-- **Public API** — what other modules call
-- **Critical Constraints** — things that silently break if ignored
+`scopekit_scaffold` walks the project tree and returns a structured breakdown. Claude uses that to propose module boundaries, then writes the `MOD-XXX.md` files and `AGENTS/INDEX.md` directly.
 
-### 6. Connect the MCP server
+> **If your codebase isn't modular yet** — mixed concerns, no clear ownership, logic scattered across layers — the scaffold output will reflect that honestly. Claude will note the ambiguities and propose boundaries based on what the structure *should* be. Review those proposals carefully before accepting; a brief that misrepresents reality misleads the AI on every future edit.
+
+### 4. Review the generated briefs
+
+Open each `AGENTS/MOD-XXX.md` and verify:
+- **Scope** lists the right files — nothing missing, nothing that belongs to another module
+- **Critical Constraints** captures the things that silently break if ignored
+- **Dependencies** are correct — no cycles, no missing links
+
+Use `AGENTS/MODULE-CHECKLIST.md` as a guide.
+
+### 5. Connect the MCP server
 
 **Claude Desktop** — edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
@@ -101,7 +103,7 @@ For each module, define:
 
 Restart your client after saving.
 
-### 7. Add `CLAUDE.md` to your project
+### 6. Add `CLAUDE.md` to your project
 
 ```bash
 cp /path/to/scopekit/templates/CLAUDE.md.template /your/project/CLAUDE.md
@@ -109,7 +111,7 @@ cp /path/to/scopekit/templates/CLAUDE.md.template /your/project/CLAUDE.md
 
 This tells Claude to call the ScopeKit tools before touching any file. Without it, the tools exist but won't be used automatically.
 
-### 8. Start scoped edits
+### 7. Start scoped edits
 
 ```
 MOD-002: add pagination to the user list endpoint
@@ -127,6 +129,7 @@ Claude calls `scopekit_get_context`, reads the brief, edits only the files in sc
 
 | Tool | Purpose |
 |------|---------|
+| `scopekit_scaffold` | Analyze the project tree and generate module briefs + INDEX.md (run once at setup) |
 | `scopekit_list_modules` | List all registered modules and their primary directories |
 | `scopekit_get_context` | Load a module's brief + all transitive dependency briefs |
 | `scopekit_resolve_module` | Find which module owns a given file path |

@@ -10,6 +10,7 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 import { parseIndex, parseModule, fileMatchesScope, ModuleEntry } from './parser.js';
+import { analyzeProject } from './scaffold.js';
 
 // Resolve the project root: --root <path> flag > SCOPEKIT_ROOT env > walk up from CWD
 function findProjectRoot(): string {
@@ -167,6 +168,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         required: ['file_path'],
       },
     },
+    {
+      name: 'scopekit_scaffold',
+      description:
+        'Analyze the project structure and return a breakdown to use as the basis for creating ' +
+        'AGENTS/INDEX.md and MOD-XXX.md files. Call this when setting up ScopeKit for the first time ' +
+        'on a project that has no AGENTS/ directory yet.',
+      inputSchema: { type: 'object', properties: {}, required: [] },
+    },
   ],
 }));
 
@@ -249,6 +258,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const context = buildContext(targetId!, modules);
     return {
       content: [{ type: 'text', text: context }],
+    };
+  }
+
+  // ── scopekit_scaffold ────────────────────────────────────────────────────
+  if (name === 'scopekit_scaffold') {
+    const agentsDirExists = fs.existsSync(agentsDir);
+    const hasModules = agentsDirExists && modules.length > 0;
+
+    if (hasModules) {
+      return {
+        content: [{
+          type: 'text',
+          text: `AGENTS/ already exists with ${modules.length} registered module(s). Use \`scopekit_list_modules\` to see them. Only run scaffold on a project with no existing ScopeKit setup.`,
+        }],
+      };
+    }
+
+    const analysis = analyzeProject(projectRoot);
+    return {
+      content: [{ type: 'text', text: analysis }],
     };
   }
 
