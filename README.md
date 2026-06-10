@@ -44,17 +44,24 @@ A dependency contributes only its **Contract** and **Invariants** — never its 
 
 ### Token savings
 
-On a 100k-LOC project:
+Measured by running `npm run bench` against projects of increasing size. Each row is the context injected before editing a single module.
 
-| Scenario | Context size | Waste |
-|----------|--------------|-------|
-| Load whole codebase | 100k LOC | Everything not in scope |
-| "Load the right files" (manual) | 50k LOC (wrong guess) | Half still irrelevant |
-| ScopeKit: MOD-004 (Auth) | ~3k LOC + deps contracts | None — scoped to what matters |
+| Strategy | 6 files / ~40 LOC | 6 files / ~164 LOC | 25 files / ~1,870 LOC | 25 files / ~4,680 LOC |
+| :--- | :--- | :--- | :--- | :--- |
+| Full codebase dump | 374 tok | 1,795 tok | 18,199 tok | 43,044 tok |
+| Module files only | 32 tok (−91%) | 457 tok (−75%) | 2,978 tok (−84%) | 6,597 tok (−85%) |
+| Module + dep source files | 343 tok (−8%) | 1,219 tok (−32%) | 10,183 tok (−44%) | 23,690 tok (−45%) |
+| **ScopeKit** (this tool) | **335 tok** (1.1×) | **433 tok** (**4.1×**) | **1,183 tok** (**15.4×**) | **1,183 tok** (**36.4×**) |
 
-**Per-request savings:** 30–50x smaller context for a single module edit.
+> Token estimates: cl100k\_base ≈ 3.5 chars / token (standard for TypeScript/Python code).  
+> ScopeKit context = module map + brief (Contract / Invariants / Internal) + transitive dep contracts.  
+> The AI still reads target module files directly; ScopeKit *replaces* reading dep source with structured contracts.
 
-**Session savings:** The hook tracks what's loaded per-session (in tmp state), so you're not re-injecting MOD-004's context on the tenth edit to it — just one deny-once on the first touch.
+The critical property: **ScopeKit's context stays flat** — 1,183 tokens whether the codebase has 1,870 or 4,680 LOC. Every other strategy scales with codebase size. The gap keeps growing.
+
+"Module files only" looks cheaper at first glance, but it omits dependency contracts entirely — the AI doesn't know what it must not break. ScopeKit delivers *fewer tokens than reading just the target module* while also including the complete contract surface of every dependency.
+
+**Session savings:** The hook tracks what's loaded per-session, so you're not re-injecting a module's context on every edit — just once on the first touch per session.
 
 ### Correctness
 

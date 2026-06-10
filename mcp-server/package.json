@@ -10,7 +10,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "verify": "node dist/cli.js verify"
+    "verify": "node dist/cli.js verify",
+    "bench": "npm run build && node tests/bench.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
