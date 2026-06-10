@@ -1,0 +1,64 @@
+---
+id: {{MODULE_ID}}
+name: {{MODULE_NAME}}
+agent: {{AGENT_NUMBER}}
+deps: {{DEPENDENCIES}}
+---
+
+# {{MODULE_ID}} — {{MODULE_NAME}}
+
+## Scope (files this agent owns)
+
+```
+{{SCOPED_FILES}}
+```
+
+<!--
+  If this module has integration points in files owned by other modules,
+  list them below so the agent knows what to check (but not freely edit):
+-->
+
+Cross-cutting integration points (coordinate with owning module before editing):
+```
+{{CROSS_CUTTING_FILES}}
+```
+
+## What This Module Does
+
+{{ONE_PARAGRAPH_SUMMARY}}
+
+## Key Files — What to Know Before Editing
+
+### `{{FILE_1}}`
+
+- {{KEY_FACT_1}}
+- {{KEY_FACT_2}}
+- {{CRITICAL_CONSTRAINT_1}}
+
+### `{{FILE_2}}`
+
+- {{ARCHITECTURE_NOTE}}
+- {{GOTCHA_OR_INVARIANT}}
+
+## Public API (what other modules call)
+
+```
+{{API_EXAMPLES}}
+```
+
+## Tauri Commands / API Routes / Exports Owned
+
+| Name | Purpose |
+|------|---------|
+| `{{EXPORT_1}}` | {{DESCRIPTION_1}} |
+| `{{EXPORT_2}}` | {{DESCRIPTION_2}} |
+
+## Critical Constraints
+
+- {{CONSTRAINT_1}}
+- {{CONSTRAINT_2}}
+- {{CONSTRAINT_3}}
+
+## Related Modules
+
+- **{{RELATED_MOD_ID}}**: {{WHY_RELATED}}

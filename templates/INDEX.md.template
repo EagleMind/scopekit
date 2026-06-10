@@ -1,0 +1,65 @@
+# {{PROJECT_NAME}} — Agent Module Registry
+
+## How This System Works
+
+Every logical module of the codebase has a numbered context file in this `AGENTS/` directory.
+When an edit is requested, a scoped agent is spawned with:
+
+1. **This INDEX.md** — to understand the full module map
+2. **The target module's context file** — as the primary briefing
+3. **Context files of declared dependencies** — for cross-module understanding (read-only)
+4. **Source files in scope only** — the agent reads and edits only files listed under `scope`
+
+This keeps token consumption minimal: the agent never blindly loads the whole codebase.
+
+---
+
+## How to Trigger a Scoped Edit
+
+Tell your AI assistant one of:
+
+- `"MOD-003: change X to Y"`
+- `"In MOD-001, add feature Z"`
+- `"Edit the [module name] module (3) to..."`
+
+The agent will spawn pre-loaded with the right context and scoped to the right files.
+
+---
+
+## Module Registry
+
+| ID      | Name                          | Context File       | Primary Directory                     |
+|---------|-------------------------------|--------------------|---------------------------------------|
+{{MODULE_TABLE_ROWS}}
+
+---
+
+## Dependency Graph
+
+```
+{{DEPENDENCY_GRAPH}}
+```
+
+Foundational (no deps): **{{FOUNDATIONAL_MODULES}}**
+
+---
+
+## Shared Contracts (read by all agents)
+
+Every agent must be aware of these cross-cutting files, even if not editing them:
+
+| File | Why It Matters |
+|------|----------------|
+{{SHARED_CONTRACTS}}
+
+---
+
+## Rules for Agents
+
+1. **Read only files in your scope** unless a cross-module check is explicitly needed
+2. **For cross-module needs**: read the other module's context file first. Only read source if the context file is insufficient
+3. **New shared types/interfaces** go in the shared contracts file, not inline
+4. **CSS/styling**: use existing design tokens. Do not add raw hex colors or magic values
+5. **Never store secrets** in application databases — use OS keychain or environment variables
+6. {{CUSTOM_RULE_1}}
+7. {{CUSTOM_RULE_2}}
